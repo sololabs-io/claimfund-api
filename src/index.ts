@@ -12,12 +12,14 @@ import { errorHandler } from './middlewares/ErrorHandler';
 import cron from 'node-cron';
 import { MigrationManager } from './services/MigrationManager';
 import { MixpanelManager } from './services/analytics/MixpanelManager';
+import { manageRouter } from './routes/v1/Manage';
 
 const app = express();
 app.use(json());
 app.use(cors());
 
 if (process.env.API_ENABLED == 'true'){
+    app.use(manageRouter);
 }
 
 app.all('*', async () => {

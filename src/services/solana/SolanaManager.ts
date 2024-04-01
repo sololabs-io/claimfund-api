@@ -5,7 +5,7 @@ import { newConnection } from "../../lib/solana";
 import axios from "axios";
 import { Metaplex } from "@metaplex-foundation/js";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
-import { createNoopSigner, createSignerFromKeypair, publicKey, signerIdentity, sol, TransactionBuilder, Umi, unwrapOption } from "@metaplex-foundation/umi";
+import { createNoopSigner, createSignerFromKeypair, generateSigner, GenericFile, KeypairSigner, publicKey, signerIdentity, sol, TransactionBuilder, Umi, unwrapOption } from "@metaplex-foundation/umi";
 import * as mplTokenMetadata from '@metaplex-foundation/mpl-token-metadata';
 import * as mplBubblegum from "@metaplex-foundation/mpl-bubblegum";
 
@@ -15,6 +15,9 @@ import { WalletModel } from "../../models/types";
 import base58 from "bs58";
 import { HeliusAsset } from "./HeliusTypes";
 import { HeliusManager } from "./HeliusManager";
+import { nftStorageUploader } from "@metaplex-foundation/umi-uploader-nft-storage";
+
+import * as mplCore from '@metaplex-foundation/mpl-core';
 
 export interface CreateTransactionResponse {
     tx: web3.Transaction,
@@ -698,6 +701,72 @@ export class SolanaManager {
         return transactionBuilder;
     }
 
+    static async createMintNftTransaction(web3Conn: web3.Connection, walletAddress: string): Promise<CreateTransactionResponse | undefined>{
+        console.log('----- createMintNftTransaction -----');
 
+        const metaplex = new Metaplex(web3Conn);
+        const umi = createUmi(process.env.SOLANA_RPC!);
+        umi.use(mplCore.mplCore());
+        const assetAddress = generateSigner(umi);
+
+        return undefined;
+
+        // const ownerSigner = createNoopSigner(publicKey(walletAddress));
+        // umi.use(signerIdentity(ownerSigner));
+
+        // const claimfundWallet = this.getMainWallet(umi);
+
+        // let transactionBuilder = await this.createUmiTransactionBuilder(umi);
+
+        // transactionBuilder = transactionBuilder.add(
+        //     mplCore.createV1(umi, {
+        //         name: 'Test Asset',
+        //         uri: 'https://s.dangervalley.com/ducks/metadata/1.json',
+        //         asset: assetAddress,
+        //         collection: collectionAddress.publicKey,
+        //         authority: claimfundWallet, // optional, defaults to payer
+        //     })
+        // );
+
+        // // await addPlugin(umi, {
+        // //     asset: asset.publicKey,
+        // //     plugin: createPlugin('Freeze', { frozen: true }),
+        // //     initAuthority: authority('Pubkey', { address: yourPubKey }),
+        // //   }).sendAndConfirm(umi);
+
+        // transactionBuilder = transactionBuilder.add(
+        //     transferSol(umi, {
+        //         source: ownerSigner,
+        //         destination: claimfundWallet.publicKey,
+        //         amount: sol(0.01),
+        //     })
+        // );
+
+        // const blockhash = await web3Conn.getLatestBlockhash();
+        // transactionBuilder = transactionBuilder.setFeePayer(ownerSigner);
+        // transactionBuilder = transactionBuilder.setBlockhash(blockhash.blockhash);
+        // const transaction = transactionBuilder.build(umi);
+        // const web3jsTransaction = toWeb3JsLegacyTransaction(transaction);
+
+        // return {tx: web3jsTransaction, blockhash: blockhash};
+    }
+
+    static getMainWallet(umi: Umi): KeypairSigner {
+        const privateKey = this.getMainWalletKeypair();
+
+        const keypair = {
+            publicKey: fromWeb3JsPublicKey(privateKey.publicKey), 
+            secretKey: privateKey.secretKey,
+        };
+        const keypairSigner = createSignerFromKeypair(umi, keypair);
+        return keypairSigner;
+    }
+
+    static getMainWalletKeypair(): web3.Keypair {
+        const privateKey = web3.Keypair.fromSecretKey(new Uint8Array(JSON.parse(process.env.MAIN_WALLET_PRIVATE_KEY!)));
+        return privateKey;
+    }
+
+    
 
 }
