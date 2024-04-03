@@ -50,40 +50,40 @@ export class MetaplexManager {
 
         let transactionBuilder = await this.createUmiTransactionBuilder(umi);
 
-        const plugins: mplCore.PluginAuthorityPairArgs[] = [];
+        // const plugins: mplCore.PluginAuthorityPairArgs[] = [];
 
-        if (isFrozen){
-            plugins.push({
-                plugin: mplCore.createPlugin({
-                    type: 'PermanentFreezeDelegate',
-                    data: { frozen: true },
-                }),
-                authority: mplCore.addressPluginAuthority(claimfundWallet.publicKey),
-            });
-        }
+        // if (isFrozen){
+        //     plugins.push({
+        //         plugin: mplCore.createPlugin({
+        //             type: 'PermanentFreezeDelegate',
+        //             data: { frozen: true },
+        //         }),
+        //         authority: mplCore.addressPluginAuthority(claimfundWallet.publicKey),
+        //     });
+        // }
 
-        if (attributes.length > 0){
-            plugins.push({
-                plugin: mplCore.createPlugin({
-                    type: 'Attributes',
-                    data: {
-                        attributeList: attributes,
-                    },
-                }),
-                authority: mplCore.addressPluginAuthority(claimfundWallet.publicKey),
-            });
-        }
+        // if (attributes.length > 0){
+        //     plugins.push({
+        //         plugin: mplCore.createPlugin({
+        //             type: 'Attributes',
+        //             data: {
+        //                 attributeList: attributes,
+        //             },
+        //         }),
+        //         authority: mplCore.addressPluginAuthority(claimfundWallet.publicKey),
+        //     });
+        // }
 
-        transactionBuilder = transactionBuilder.add(
-            mplCore.createV1(umi, {
-                name: 'Claim Fund',
-                uri: uri,
-                asset: assetAddress,
-                collection: publicKey(collectionAddress),
-                authority: claimfundWallet,
-                plugins: plugins
-            })
-        );
+        // transactionBuilder = transactionBuilder.add(
+        //     mplCore.createV1(umi, {
+        //         name: 'Claim Fund',
+        //         uri: uri,
+        //         asset: assetAddress,
+        //         collection: publicKey(collectionAddress),
+        //         authority: claimfundWallet,
+        //         plugins: plugins
+        //     })
+        // );
 
         transactionBuilder = transactionBuilder.add(
             transferSol(umi, {
