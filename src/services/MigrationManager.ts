@@ -1,8 +1,12 @@
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { SolanaManager } from "./solana/SolanaManager";
 import { newConnection } from "../lib/solana";
-import { PublicKey } from "@solana/web3.js";
+import { Keypair, PublicKey, Transaction } from "@solana/web3.js";
 import { MetaplexManager } from "./solana/MetaplexManager";
+import { kSupportedTokens } from "./Constants";
+import { BadRequestError } from "../errors/BadRequestError";
+import { base64 } from "@metaplex-foundation/umi/serializers";
+import base58 from "bs58";
 
 export class MigrationManager {
 
@@ -16,17 +20,16 @@ export class MigrationManager {
 
         // const web3Conn = newConnection();
         // const signature = await web3Conn.requestAirdrop(
-        //     new PublicKey(mainWalletAddress),
+        //     new PublicKey('FUCww3SgAmqiP4CswfgY2r2Nsf6PPzARrXraEnGCn4Ln'),
         //     1000000000
         // );
-        // console.log('MigrationManager', 'migrate', 'signature', signature);
+        // console.log('MigrationManager', 'requestAirdrop', 'signature', signature);
 
-        const web3Conn = newConnection();
         // const collection = await MetaplexManager.mintCollectionNft(web3Conn, uri);
         // console.log('MigrationManager', 'migrate', 'collection', collection);
 
 
-        // const assets = await MetaplexManager.fetchAssetsByOwner(mainWalletAddress);
+        // const assets = await MetaplexManager.fetchAssetsByOwner('FLb3LyRUFcNJpLjYKNYqrjx5kqSP8o12UWKeRuH4tNaQ');
         // console.log('MigrationManager', 'migrate', 'assets', assets);
 
         console.log('MigrationManager', 'migrate', 'done');
