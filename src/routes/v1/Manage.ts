@@ -62,7 +62,7 @@ router.post(
         if (imageUrl) { attributes.push({key:"image", value:imageUrl}) };
         if (goal) { attributes.push({key:"goal", value:''+goal}) };
 
-        const txData = await MetaplexManager.createMintNftTransaction(web3Conn, walletAddress, collectionAddress, uri, attributes, true);
+        const txData = await MetaplexManager.createMintNftTransaction(web3Conn, walletAddress, publicKey, collectionAddress, uri, attributes, true);
         if (!txData?.tx){
             throw new BadRequestError('Failed to create a Piggy Box. Try again.');
         }
@@ -77,6 +77,7 @@ router.post(
         const response = {
             "publicKey": publicKey,
             "privateKey": privateKey,
+            "assetAddress": txData.assetAddress,
             "transaction": encodedTransctionString,
         };
       

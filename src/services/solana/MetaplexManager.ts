@@ -34,10 +34,9 @@ export class MetaplexManager {
         return transactionBuilder;
     }
 
-    static async createMintNftTransaction(web3Conn: web3.Connection, walletAddress: string, collectionAddress: string, uri: string, attributes: {key: string, value: string}[] = [], isFrozen: boolean = false): Promise<CreateTransactionResponse | undefined>{
+    static async createMintNftTransaction(web3Conn: web3.Connection, walletAddress: string, mintTo: string, collectionAddress: string, uri: string, attributes: {key: string, value: string}[] = [], isFrozen: boolean = false): Promise<CreateTransactionResponse & {assetAddress: string} | undefined>{
         console.log('----- createMintNftTransaction -----');
 
-        const metaplex = new Metaplex(web3Conn);
         const umi = createUmi(process.env.SOLANA_RPC!);
         umi.use(mplCore.mplCore());
         const assetAddress = generateSigner(umi);
@@ -74,8 +73,6 @@ export class MetaplexManager {
             });
         }
 
-        console.log('plugins.length', plugins.length);
-
         transactionBuilder = transactionBuilder.add(
             mplCore.createV1(umi, {
                 name: 'Claim Fund',
@@ -83,7 +80,8 @@ export class MetaplexManager {
                 asset: assetAddress,
                 collection: publicKey(collectionAddress),
                 authority: claimfundWallet,
-                plugins: plugins
+                plugins: plugins,
+                owner: publicKey(mintTo),
             })
         );
 
@@ -104,7 +102,7 @@ export class MetaplexManager {
         const assetKeypair = web3.Keypair.fromSecretKey(assetAddress.secretKey);
         web3jsTransaction.partialSign(assetKeypair);
 
-        return {tx: web3jsTransaction, blockhash: blockhash};
+        return {tx: web3jsTransaction, blockhash: blockhash, assetAddress: assetAddress.publicKey};
     }
 
     static async mintCollectionNft(web3Conn: web3.Connection, uri: string): Promise<string>{
