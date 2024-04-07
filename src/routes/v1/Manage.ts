@@ -1,18 +1,15 @@
 import express, { Request, Response } from "express";
-import { HeliusManager } from "../../services/solana/HeliusManager";
 import { validateRequest } from "../../middlewares/ValidateRequest";
 import { body } from "express-validator";
 import { TipLink } from "@tiplink/api";
-import { MintApiRequest } from "helius-sdk";
 import { BadRequestError } from "../../errors/BadRequestError";
 import { kSupportedTokens } from "../../services/Constants";
 import { MetaplexManager } from "../../services/solana/MetaplexManager";
 import { newConnection } from "../../lib/solana";
 import { SolanaManager } from "../../services/solana/SolanaManager";
+import { PiggyBox } from "../../entities/PiggyBox";
 
 const router = express.Router();
-
-// https://github.com/metaplex-foundation/mpl-core/tree/main/clients/js
 
 router.post(
     '/api/v1/manage/create',
@@ -74,6 +71,19 @@ router.post(
         });
         const encodedTransctionString = JSON.stringify(encodedTransction.toJSON());
 
+        const box = new PiggyBox();
+        box.host = walletAddress;
+        box.boxAddress = publicKey;
+        box.assetAddress = txData.assetAddress;
+        box.tokenAddress = token.mintAddress;
+        box.token = token.name;
+        box.title = title;
+        box.description = description;
+        box.image = imageUrl;
+        box.goal = goal;
+        box.email = email;
+        box.save();
+
         const response = {
             "publicKey": publicKey,
             "privateKey": privateKey,
@@ -84,91 +94,5 @@ router.post(
         res.status(200).send(response);
     }
 );
-
-// router.post(
-//     '/api/v1/manage/create',
-//     [
-//         body('walletAddress').notEmpty().withMessage('Wallet Address must be valid'),
-//         body('email').isEmail().withMessage('Email must be valid'),
-//         body('title').notEmpty().withMessage('Title must be valid'),
-//         body('description').notEmpty().withMessage('Description must be valid'),
-//         body('image').optional().notEmpty().withMessage('Image must be valid'),
-//         body('goal').optional().isNumeric().withMessage('goal must be valid'),
-
-//     ],
-//     validateRequest,
-//     async (req: Request, res: Response) => {
-//         const walletAddress = req.body.walletAddress;
-//         const title = req.body.title;
-//         const description = req.body.description;
-//         const imageUrl = req.body.image;
-//         const goal = req.body.goal;
-//         const email = req.body.email;
-//         const tokenAddress = req.body.token;
-
-//         const token = kSupportedTokens.find(t => t.mintAddress === tokenAddress);
-//         if (!token){
-//             throw new BadRequestError('Token is not supported');
-//         }
-
-//         //TODO: in future charge 0.01 SOL for creating a fund,
-//         //      so that our Helius account won't be drained because of spam
-
-//         // create a tiplink
-//         const tiplink = await TipLink.create();
-//         const privateKey = tiplink.url.toString().split("/").pop();
-//         const publicKey = tiplink.keypair.publicKey.toBase58();
-        
-//         //TODO: mint cNFT to this wallet
-//         const mintParams: MintApiRequest = {
-//             name: title,
-//             symbol: 'CLAIMFUND',
-//             description: description,
-//             owner: publicKey,
-//             // delegate?: string;
-//             // collection?: string;
-//             creators: [{address: walletAddress, share: 100}],
-//             // uri?: string;
-//             sellerFeeBasisPoints: 0,
-//             imageUrl: imageUrl,
-//             externalUrl: 'https://claim.fund',
-//             attributes: [
-//                 {
-//                     trait_type: 'token',
-//                     value: token.name,
-//                 },
-//                 {
-//                     trait_type: 'tokenAddress',
-//                     value: token.mintAddress,
-//                 },
-//                 {
-//                     trait_type: 'goal',
-//                     value: '' + goal,
-//                 },
-//                 // {
-//                 //     trait_type: 'email',
-//                 //     value: email,
-//                 // },
-//             ],
-//             // imagePath?: string;
-//             // walletPrivateKey?: string;
-//         };
-//         console.log('mintParams', mintParams);
-//         const mintResult = await HeliusManager.mintCompressedNFT(mintParams);
-//         console.log('mintResult', mintResult);
-//         if (!mintResult.minted){
-//             throw new BadRequestError('Failed to create a fund. Try again.');
-//         }
-
-//         //TODO: cNFT should belong to the collection
-
-//         const response = {
-//             "publicKey": publicKey,
-//             "privateKey": privateKey
-//         };
-      
-//         res.status(200).send(response);
-//     }
-// );
 
 export { router as manageRouter };
