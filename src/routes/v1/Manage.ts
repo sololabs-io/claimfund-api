@@ -20,7 +20,6 @@ router.post(
         body('description').notEmpty().withMessage('Description must be valid'),
         body('image').optional().notEmpty().withMessage('Image must be valid'),
         body('goal').optional().isNumeric().withMessage('goal must be valid'),
-
     ],
     validateRequest,
     async (req: Request, res: Response) => {
@@ -41,7 +40,6 @@ router.post(
         const tiplink = await TipLink.create();
         const privateKey = tiplink.url.toString().split("/").pop();
         const publicKey = tiplink.keypair.publicKey.toBase58();
-
 
         const web3Conn = newConnection();
         const collectionAddress = process.env.COLLECTION_ADDRESS!;

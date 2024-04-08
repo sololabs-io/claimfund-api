@@ -16,4 +16,9 @@ export const kSupportedTokens: Token[] = [
         decimals: 5,
         name: 'BONK',
     },
+    {
+        mintAddress: 'FoRGERiW7odcCBGU1bztZi16osPBHjxharvDathL5eds',
+        decimals: 9,
+        name: 'FORGE',
+    },
 ];
