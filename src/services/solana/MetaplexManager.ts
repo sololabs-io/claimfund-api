@@ -129,6 +129,7 @@ export class MetaplexManager {
         transactionBuilder = transactionBuilder.setFeePayer(claimfundWallet);
         transactionBuilder = transactionBuilder.setBlockhash(blockhash.blockhash);
 
+        console.log('mintCollectionNft transactionBuilder:', transactionBuilder);
         const result = await transactionBuilder.sendAndConfirm(umi);
         console.log('mintCollectionNft result:', result);
 
@@ -159,7 +160,7 @@ export class MetaplexManager {
             .whereField('owner', owner)
             .getDeserialized()
 
-        console.log('assetsByOwner', assetsByOwner)
+        return assetsByOwner;
     }
 
 

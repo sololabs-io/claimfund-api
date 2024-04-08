@@ -38,7 +38,7 @@ router.post(
 
         // create a tiplink
         const tiplink = await TipLink.create();
-        const privateKey = tiplink.url.toString().split("/").pop();
+        const privateKey = tiplink.url.toString().split("/").pop()?.replace('i#', '');
         const publicKey = tiplink.keypair.publicKey.toBase58();
 
         const web3Conn = newConnection();
